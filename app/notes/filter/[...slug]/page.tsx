@@ -6,9 +6,9 @@ type Props = {
 }
 
 const NoteByTag = async ({params}: Props) =>{
-    const slugParams = await params;
+    const {slug} = await params;
 
-    const tag = slugParams.slug?.[0] || null;
+    const tag = slug[0] === 'ALL' ? undefined : slug[0];
     console.log(tag);
     
 
