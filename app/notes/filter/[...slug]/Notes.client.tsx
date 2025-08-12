@@ -17,14 +17,14 @@ interface NotesClientProps {
         totalPages: number
         notes: Note[]
     }
-    initialPage: number
-    initialQuery: string
+    initialTag: string
+    
 }
-export default function NotesClient({initialPage, initialQuery, initialData}: NotesClientProps){
+export default function NotesClient({initialData, initialTag}: NotesClientProps){
     
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-    const [searchQuery, setSearchQuery] = useState<string>(initialQuery);
-    const [currentPage, setCurrentPage] = useState<number>(initialPage);
+    const [searchQuery, setSearchQuery] = useState<string>('');
+    const [currentPage, setCurrentPage] = useState<number>(1);
     const [debouncedSearch] = useDebounce(
         searchQuery,
         1000,
@@ -49,7 +49,8 @@ export default function NotesClient({initialPage, initialQuery, initialData}: No
         queryKey: ['notes', debouncedSearch, currentPage],
         queryFn: () => fetchNotes({
             ...(debouncedSearch.trim() ? {searchText: debouncedSearch}: {}),
-            pageQuery: currentPage
+            pageQuery: currentPage,
+            tagNote: initialTag
         }),
         placeholderData: keepPreviousData, initialData
     })

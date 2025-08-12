@@ -1,5 +1,5 @@
 import { fetchNotes } from "@/lib/api";
-import NoteList from "@/components/NoteList/NoteList";
+import NotesClient from "./Notes.client";
 
 type Props = {
     params: Promise<{slug: string[]}>
@@ -8,7 +8,7 @@ type Props = {
 const NoteByTag = async ({params}: Props) =>{
     const {slug} = await params;
 
-    const tag = slug[0] === 'ALL' ? undefined : slug[0];
+    const tag = slug[0] === 'ALL' ? '' : slug[0];
     console.log(tag);
     
 
@@ -16,7 +16,7 @@ const NoteByTag = async ({params}: Props) =>{
     let response;
     
 
-    if(tag === 'ALl' || tag === undefined){
+    if(tag === ''){
         response = await fetchNotes({searchText: '', pageQuery: 1});
     }
     else{
@@ -27,7 +27,7 @@ const NoteByTag = async ({params}: Props) =>{
         <div>
             
             {response?.notes.length > 0 &&
-                <NoteList notes={response.notes}/>
+                <NotesClient initialData={response} initialTag={tag}/>
             }
         </div>
     )

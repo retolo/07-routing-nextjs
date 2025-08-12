@@ -42,6 +42,8 @@ export const fetchNotes = async ({searchText, pageQuery, tagNote}: FetchNotesReq
         }
         
     );
+
+    
     return response.data
 
 }
