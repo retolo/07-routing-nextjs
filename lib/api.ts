@@ -1,5 +1,5 @@
 import axios from "axios";
-import { type Note, type Tags} from "../types/note";
+import { type Note} from "../types/note";
 
 
 
@@ -18,10 +18,11 @@ interface CreateNoteTask{
 interface FetchNotesRequest{
     searchText?: string
     pageQuery?: number
+    tagNote?: string
 }
 
 
-export const fetchNotes = async ({searchText, pageQuery}: FetchNotesRequest): Promise<FetchNotesProps> => {
+export const fetchNotes = async ({searchText, pageQuery, tagNote}: FetchNotesRequest): Promise<FetchNotesProps> => {
     const mykey = process.env.NEXT_PUBLIC_NOTEHUB_TOKEN;
     const response = await axios.get<FetchNotesProps>(
         'https://notehub-public.goit.study/api/notes',
@@ -29,6 +30,9 @@ export const fetchNotes = async ({searchText, pageQuery}: FetchNotesRequest): Pr
             params:{
                 ...(searchText ? { search: searchText } : {}),
                 ...(pageQuery ? { page: pageQuery } : {}),
+                ...(tagNote ? { tag: tagNote } : {}),
+                
+                
                 
             },
             headers:{
@@ -89,17 +93,3 @@ export const  fetchNoteById = async (id: string): Promise<Note> =>{
     
 }
 
-export const  getNoteTag = async () => {
-    const mykey = process.env.NEXT_PUBLIC_NOTEHUB_TOKEN;
-    const response = await axios.get(
-        `https://notehub-public.goit.study/api/notes/`,
-        {
-            headers:{
-                accept: 'application/json',
-                Authorization: `Bearer ${mykey}`
-            }
-        }
-    )
-    return response.data
-    
-}

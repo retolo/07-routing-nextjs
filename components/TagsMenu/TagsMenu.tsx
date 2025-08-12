@@ -1,31 +1,45 @@
+'use client'
 
 
-import { Tags } from '@/types/note';
 import css from './TagsMenu.module.css'
-import { getNoteTag } from '@/lib/api';
+import { useState } from 'react';
+import Link from 'next/link';
 
-const TagsMenu = async () =>{
-    const tags = await getNoteTag();
+
+
+const TagsMenu =  () =>{
+    const [isOpen, setIsOpen] = useState<boolean>(false);
+    const toggle = () => setIsOpen(!isOpen);
+    const categories = ['All', 'Work', 'Personal', 'Meeting', 'Shopping', 'Todo'];
     
-
+    
     
     
     return(
             <div className={css.menuContainer}>
-                <button  className={css.menuButton}>
+                <button  className={css.menuButton} onClick={toggle}>
                     Notes ▾
                 </button>
                 
-                <ul className={css.menuList}>
-                    {tags.notes.map((tag: Tags) =>(
-                        <li key={tag.id} className={css.menuItem}>
-                            <a href={`/notes/filter/all/${tag.id}`} className={css.menuLink}>
-                                {tag.tag}
-                            </a>
-                        </li>
-                    ))}
+                {isOpen && (
+                    <ul className={css.menuList}>
+                        {categories.map((category) =>(
+                            <li key={category}>
+                                <Link onClick={toggle} href={`/notes/filter/${category}`}>{category}</Link>
+                            
+                            </li>
+    
                     
-                </ul>
+                    
+                        ))}
+                    
+                
+                    </ul>
+                )
+                    
+                
+                }
+                
             </div>
 
     )

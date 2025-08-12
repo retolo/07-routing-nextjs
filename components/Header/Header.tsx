@@ -3,7 +3,11 @@ import css from './Header.module.css'
 import TagsMenu from "../TagsMenu/TagsMenu";
 
 
-const Header = () =>{
+
+const Header = async () =>{
+    
+    
+    
     return(
         <header className={css.header}>
             <Link href="/" aria-label="Home">
