@@ -17,7 +17,7 @@ interface NotesClientProps {
         totalPages: number
         notes: Note[]
     }
-    initialTag: string
+    initialTag: string | null
     
 }
 export default function NotesClient({initialData, initialTag}: NotesClientProps){

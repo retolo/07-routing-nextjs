@@ -18,7 +18,7 @@ interface CreateNoteTask{
 interface FetchNotesRequest{
     searchText?: string
     pageQuery?: number
-    tagNote?: string
+    tagNote?: string | null
 }
 
 
