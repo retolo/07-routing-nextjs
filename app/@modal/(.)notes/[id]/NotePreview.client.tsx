@@ -1,18 +1,19 @@
 'use client'
 import { useRouter } from 'next/navigation';
-import { DehydratedState, useQuery, HydrationBoundary} from "@tanstack/react-query";
+import {DehydratedState, useQuery, HydrationBoundary} from "@tanstack/react-query";
 import { fetchNoteById } from "@/lib/api";
 import Modal from "@/components/Modal/Modal";
 import css from './NotePreview.module.css'
 
 interface NoteModalPreviewProps{
     id: string,
-    dehydratedBoundary: DehydratedState
+    dehydratedState: DehydratedState
+    
 }
 
 
 
-const NoteModalPreview = ({id, dehydratedBoundary}: NoteModalPreviewProps) =>{
+const NoteModalPreview = ({id, dehydratedState}: NoteModalPreviewProps) =>{
 
     const router = useRouter();
     const handleClose = () => router.back();
@@ -45,7 +46,7 @@ const NoteModalPreview = ({id, dehydratedBoundary}: NoteModalPreviewProps) =>{
 
 
     return(
-      <HydrationBoundary state={dehydratedBoundary}>
+      <HydrationBoundary state={dehydratedState}>
         <Modal onClose={handleClose}>
         <div className={css.container}>
           <div className={css.item}>
@@ -59,17 +60,19 @@ const NoteModalPreview = ({id, dehydratedBoundary}: NoteModalPreviewProps) =>{
           <div className={css.infoDiv}>
             <button className={css.backBtn} onClick={handleClose}>Close</button>
             <p className={css.tag}>{data?.tag}</p>
-            <p className={css.date}>{data?.updatedAt.slice(0, 10)}</p>
+            <p className={css.date}>{data?.createdAt.slice(0, 10)}</p>
           </div>
           
             
           
         </div>
       </Modal>
+
       </HydrationBoundary>
+      
     )
 
 }
 
 
-export default NoteModalPreview
+export default NoteModalPreview;

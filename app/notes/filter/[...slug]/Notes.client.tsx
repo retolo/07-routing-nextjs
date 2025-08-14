@@ -4,7 +4,7 @@ import NoteList from '@/components/NoteList/NoteList'
 import { useDebounce, useDebouncedCallback } from 'use-debounce'
 import Modal from '@/components/Modal/Modal'
 import SearchBox from '@/components/SearchBox/SearchBox'
-import  React, { useState } from 'react'
+import  React, { useEffect, useState } from 'react'
 import { useQuery, keepPreviousData } from '@tanstack/react-query'
 import { fetchNotes } from '@/lib/api'
 import Pagination from '@/components/Pagination/Pagination'
@@ -25,28 +25,29 @@ export default function NotesClient({initialData, initialTag}: NotesClientProps)
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
     const [searchQuery, setSearchQuery] = useState<string>('');
     const [currentPage, setCurrentPage] = useState<number>(1);
+    const [currentTag, setCurrentTag] = useState<string | null>(initialTag);
     const [debouncedSearch] = useDebounce(
         searchQuery,
         1000,
     )
 
         
-    const changeSearchQuery = useDebouncedCallback((newQuery: string) => {
-        setCurrentPage(1);
-        setSearchQuery(newQuery);
-     });
-    
+    // const changeSearchQuery = useDebouncedCallback((newQuery: string) => {
+    //     setCurrentPage(1);
+    //     setSearchQuery(newQuery);
+    //  });
 
+     useEffect(() =>{
+        setCurrentTag(initialTag)
+     }, [initialTag])
 
-
-    
-
-
-    
+     useEffect(() =>{
+        setCurrentPage(1)
+     }, [debouncedSearch])
     
         
     const {data} = useQuery({
-        queryKey: ['notes', debouncedSearch, currentPage, initialTag],
+        queryKey: ['notes', debouncedSearch, currentPage, initialTag, currentTag],
         queryFn: () => fetchNotes({
             ...(debouncedSearch.trim() ? {searchText: debouncedSearch}: {}),
             pageQuery: currentPage,
@@ -71,13 +72,14 @@ export default function NotesClient({initialData, initialTag}: NotesClientProps)
     return(
         <div className={css.app}>
             <header className={css.toolbar}>
-                <SearchBox  onChange={changeSearchQuery}/>
+                <SearchBox  onChange={setSearchQuery}/>
                 <button type='button' onClick={() => setIsModalOpen(true)} className={css.button}>Create note +</button>
 
                 
             </header>
-            {data?.notes && data?.notes.length > 0 &&
-                <NoteList notes={data?.notes}/>
+            {data?.notes && data?.notes.length > 0 
+                ? <NoteList notes={data?.notes}/>
+                : <p>Something went wrong...</p>
             }
             {totalPages !== undefined && totalPages > 1 &&
                 <Pagination totalPages={totalPages} currentPage={currentPage} onPageSelect={setCurrentPage}/>
