@@ -34,7 +34,7 @@ export default function NotesClient({initialData, initialTag}: NotesClientProps)
     const changeSearchQuery = useDebouncedCallback((newQuery: string) => {
         setCurrentPage(1);
         setSearchQuery(newQuery);
-     }, 300);
+     });
     
 
 
@@ -46,7 +46,7 @@ export default function NotesClient({initialData, initialTag}: NotesClientProps)
     
         
     const {data} = useQuery({
-        queryKey: ['notes', debouncedSearch, currentPage],
+        queryKey: ['notes', debouncedSearch, currentPage, initialTag],
         queryFn: () => fetchNotes({
             ...(debouncedSearch.trim() ? {searchText: debouncedSearch}: {}),
             pageQuery: currentPage,

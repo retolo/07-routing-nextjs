@@ -1,24 +1,23 @@
 'use client'
 import { useRouter } from 'next/navigation';
-import { useQuery } from "@tanstack/react-query";
+import { DehydratedState, useQuery, HydrationBoundary} from "@tanstack/react-query";
 import { fetchNoteById } from "@/lib/api";
 import Modal from "@/components/Modal/Modal";
-import { useState } from 'react';
 import css from './NotePreview.module.css'
 
 interface NoteModalPreviewProps{
-    id: string
+    id: string,
+    dehydratedBoundary: DehydratedState
 }
 
 
 
-const NoteModalPreview = ({id}: NoteModalPreviewProps) =>{
+const NoteModalPreview = ({id, dehydratedBoundary}: NoteModalPreviewProps) =>{
 
     const router = useRouter();
-    const [isOpen, setIsopen] = useState<boolean>(true);
     const handleClose = () => router.back();
 
-    const toggle = () => setIsopen(!isOpen);
+    
 
     const {data, isLoading, error} = useQuery({
         queryKey: ['note', id],
@@ -46,6 +45,7 @@ const NoteModalPreview = ({id}: NoteModalPreviewProps) =>{
 
 
     return(
+      <HydrationBoundary state={dehydratedBoundary}>
         <Modal onClose={handleClose}>
         <div className={css.container}>
           <div className={css.item}>
@@ -66,6 +66,7 @@ const NoteModalPreview = ({id}: NoteModalPreviewProps) =>{
           
         </div>
       </Modal>
+      </HydrationBoundary>
     )
 
 }
