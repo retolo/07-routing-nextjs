@@ -10,6 +10,7 @@ import { fetchNotes } from '@/lib/api'
 import Pagination from '@/components/Pagination/Pagination'
 import NoteForm from '@/components/NoteForm/NoteForm'
 import { Note } from '@/types/note'
+import { error } from 'console'
 
 
 interface NotesClientProps {
@@ -32,30 +33,28 @@ export default function NotesClient({initialData, initialTag}: NotesClientProps)
     )
 
         
-    // const changeSearchQuery = useDebouncedCallback((newQuery: string) => {
-    //     setCurrentPage(1);
-    //     setSearchQuery(newQuery);
-    //  });
+    
 
      useEffect(() =>{
         setCurrentTag(initialTag)
      }, [initialTag])
 
-     useEffect(() =>{
-        setCurrentPage(1)
-     }, [debouncedSearch])
+     
     
         
-    const {data} = useQuery({
-        queryKey: ['notes', debouncedSearch, currentPage, initialTag, currentTag],
+    const {data, error} = useQuery({
+        queryKey: ['notes', debouncedSearch, currentPage, currentTag],
         queryFn: () => fetchNotes({
             ...(debouncedSearch.trim() ? {searchText: debouncedSearch}: {}),
             pageQuery: currentPage,
-            tagNote: initialTag
+            tagNote: currentTag
         }),
         placeholderData: keepPreviousData, initialData
     })
 
+
+    
+    
     
 
     
@@ -72,14 +71,17 @@ export default function NotesClient({initialData, initialTag}: NotesClientProps)
     return(
         <div className={css.app}>
             <header className={css.toolbar}>
-                <SearchBox  onChange={setSearchQuery}/>
+                <SearchBox value={searchQuery}  onChange={(value) =>{
+                    setSearchQuery(value);
+                    setCurrentPage(1)
+                }}/>
                 <button type='button' onClick={() => setIsModalOpen(true)} className={css.button}>Create note +</button>
 
                 
             </header>
             {data?.notes && data?.notes.length > 0 
                 ? <NoteList notes={data?.notes}/>
-                : <p>Something went wrong...</p>
+                : <p>{error?.message}</p>
             }
             {totalPages !== undefined && totalPages > 1 &&
                 <Pagination totalPages={totalPages} currentPage={currentPage} onPageSelect={setCurrentPage}/>

@@ -29,17 +29,22 @@ const NoteModalPreview = ({id, dehydratedState}: NoteModalPreviewProps) =>{
 
     if(isLoading){
         return(
-            <Modal onClose={() => handleClose}>
+          <HydrationBoundary state={dehydratedState}>
+            <Modal onClose={handleClose}>
                 <p>Loading...</p>
             </Modal>
+          </HydrationBoundary>
+            
         )
     }
 
     if(error){
         return(
-            <Modal onClose={() => handleClose}>
+          <HydrationBoundary state={dehydratedState}>
+            <Modal onClose={handleClose}>
                 <p>Something went wrong...</p>
             </Modal>
+          </HydrationBoundary>  
         )
         
     }
