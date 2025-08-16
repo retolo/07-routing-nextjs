@@ -25,31 +25,21 @@ export default function NotesClient({initialData, initialTag}: NotesClientProps)
     
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
     const [searchQuery, setSearchQuery] = useState<string>('');
-    const [currentPage, setCurrentPage] = useState<number>(1);
-    const [currentTag, setCurrentTag] = useState<string | null>(initialTag);
-    const [debouncedSearch, setDebouncedSearch] = useDebounce(
+    const [pageQuery, setCurrentPage] = useState<number>(1);
+    const [searchText] = useDebounce(
         searchQuery,
         300,
     )
-
-        
-    
-
-     useEffect(() =>{
-        setCurrentTag(initialTag)
-        setCurrentPage(1)
-        setDebouncedSearch('')
-     }, [currentTag, initialTag, setDebouncedSearch])
 
      
     
         
     const {data} = useQuery({
-        queryKey: ['notes', debouncedSearch, currentPage, currentTag],
+        queryKey: ['notes', searchText, pageQuery, initialTag],
         queryFn: () => fetchNotes({
-            ...(debouncedSearch.trim() ? {searchText: debouncedSearch}: {}),
-            pageQuery: currentPage,
-            tagNote: currentTag
+            ...(searchText.trim() ? {searchText: searchText}: {}),
+            pageQuery: pageQuery,
+            tagNote: initialTag
         }),
         placeholderData: keepPreviousData, initialData
     })
@@ -81,12 +71,12 @@ export default function NotesClient({initialData, initialTag}: NotesClientProps)
 
                 
             </header>
-            {data?.notes && data?.notes.length > 0 
+            {data?.notes && data?.notes.length > 0 && data?.notes !== undefined 
                 ? <NoteList notes={data?.notes}/>
                 : <p>No notes found.</p>
             }
             {totalPages !== undefined && totalPages > 1 &&
-                <Pagination totalPages={totalPages} currentPage={currentPage} onPageSelect={setCurrentPage}/>
+                <Pagination totalPages={totalPages} currentPage={pageQuery} onPageSelect={setCurrentPage}/>
 
             }
             
