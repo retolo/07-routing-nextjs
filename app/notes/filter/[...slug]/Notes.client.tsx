@@ -1,7 +1,7 @@
 'use client'
 import css from './App.module.css'
 import NoteList from '@/components/NoteList/NoteList'
-import { useDebounce, useDebouncedCallback } from 'use-debounce'
+import { useDebounce } from 'use-debounce'
 import Modal from '@/components/Modal/Modal'
 import SearchBox from '@/components/SearchBox/SearchBox'
 import  React, { useEffect, useState } from 'react'
@@ -10,7 +10,7 @@ import { fetchNotes } from '@/lib/api'
 import Pagination from '@/components/Pagination/Pagination'
 import NoteForm from '@/components/NoteForm/NoteForm'
 import { Note } from '@/types/note'
-import { error } from 'console'
+
 
 
 interface NotesClientProps {
@@ -27,9 +27,9 @@ export default function NotesClient({initialData, initialTag}: NotesClientProps)
     const [searchQuery, setSearchQuery] = useState<string>('');
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [currentTag, setCurrentTag] = useState<string | null>(initialTag);
-    const [debouncedSearch] = useDebounce(
+    const [debouncedSearch, setDebouncedSearch] = useDebounce(
         searchQuery,
-        1000,
+        300,
     )
 
         
@@ -37,12 +37,14 @@ export default function NotesClient({initialData, initialTag}: NotesClientProps)
 
      useEffect(() =>{
         setCurrentTag(initialTag)
-     }, [initialTag])
+        setCurrentPage(1)
+        setDebouncedSearch('')
+     }, [currentTag, initialTag, setDebouncedSearch])
 
      
     
         
-    const {data, error} = useQuery({
+    const {data} = useQuery({
         queryKey: ['notes', debouncedSearch, currentPage, currentTag],
         queryFn: () => fetchNotes({
             ...(debouncedSearch.trim() ? {searchText: debouncedSearch}: {}),
@@ -81,7 +83,7 @@ export default function NotesClient({initialData, initialTag}: NotesClientProps)
             </header>
             {data?.notes && data?.notes.length > 0 
                 ? <NoteList notes={data?.notes}/>
-                : <p>{error?.message}</p>
+                : <p>No notes found.</p>
             }
             {totalPages !== undefined && totalPages > 1 &&
                 <Pagination totalPages={totalPages} currentPage={currentPage} onPageSelect={setCurrentPage}/>
